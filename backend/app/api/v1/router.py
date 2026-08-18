@@ -1,0 +1,8 @@
+from fastapi import APIRouter
+from backend.app.api.v1.endpoints.chat import router as chat_router
+from backend.app.api.v1.endpoints.health import router as health_router
+
+api_v1_router = APIRouter()
+
+api_v1_router.include_router(chat_router, tags=["chat"])
+api_v1_router.include_router(health_router, tags=["system"])

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NovaChat AI — Next-Gen Intelligence</title>
+    <meta
+      name="description"
+      content="Modern, lightning-fast AI assistant powered by Groq and advanced LLMs."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Marked.js for robust GitHub Flavored Markdown (GFM) and Table Rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- SIDEBAR -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-top">
+          <div class="brand">
+            <div class="brand-logo">
+              <span class="logo-pulse"></span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+            </div>
+            <div class="brand-text">
+              <span class="brand-name">NovaChat</span>
+              <span class="brand-tag">PRO</span>
+            </div>
+          </div>
+
+          <button id="newChatBtn" class="btn-new-chat" title="Start a fresh conversation (Ctrl+K)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>New Conversation</span>
+            <kbd class="shortcut-key">⌘K</kbd>
+          </button>
+
+          <div class="nav-section">
+            <div class="nav-label">Workspace</div>
+            <nav class="nav-list">
+              <button class="nav-item active" id="navChat">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>AI Chat</span>
+              </button>
+              <button class="nav-item" id="navPrompts">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                <span>Prompt Library</span>
+              </button>
+              <button class="nav-item" id="navHistory">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>Recent History</span>
+              </button>
+            </nav>
+          </div>
+
+          <div class="nav-section">
+            <div class="nav-header-row">
+              <div class="nav-label">Recent Sessions</div>
+              <button id="clearAllHistoryBtn" class="btn-text-action" title="Clear all saved history">Clear all</button>
+            </div>
+            <div class="recent-sessions-list" id="recentSessions">
+              <!-- Dynamically populated from localStorage -->
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-bottom">
+          <div class="model-badge">
+            <div class="model-badge-header">
+              <span class="status-indicator online"></span>
+              <span class="model-title">Active Engine</span>
+            </div>
+            <p class="model-name" id="sidebarModelName">openai/gpt-oss-120b</p>
+          </div>
+
+          <div class="user-profile">
+            <div class="user-avatar">NC</div>
+            <div class="user-info">
+              <span class="user-name">Developer Workspace</span>
+              <span class="user-tier">Ultra Fast Inference</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN CHAT PANEL -->
+      <main class="main-content">
+        <!-- TOPBAR -->
+        <header class="topbar">
+          <div class="topbar-left">
+            <button id="sidebarToggle" class="btn-icon mobile-only" aria-label="Toggle sidebar">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+            </button>
+            <div class="topbar-title-group">
+              <h1 class="topbar-title" id="currentSessionTitle">Assistant Workspace</h1>
+              <span class="topbar-subtitle" id="currentSessionSubtitle">Ready for questions & code</span>
+            </div>
+          </div>
+
+          <div class="topbar-right">
+            <div class="latency-badge" id="statusBadge">
+              <span class="badge-dot"></span>
+              <span id="statusText">Connected</span>
+            </div>
+
+            <button id="openPromptsTopBtn" class="btn-secondary" title="Open prompt library">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+              <span>Prompts</span>
+            </button>
+
+            <button id="clearChatBtn" class="btn-secondary" title="Clear current chat">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              <span>Clear</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- CHAT AREA -->
+        <div class="chat-viewport" id="chatViewport">
+          <!-- WELCOME HERO (Hidden once messages start) -->
+          <div class="welcome-hero" id="welcomeHero">
+            <div class="hero-icon-container">
+              <div class="hero-glow"></div>
+              <svg class="hero-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+            </div>
+            <h2 class="hero-title">What would you like to explore today?</h2>
+            <p class="hero-desc">
+              Ask questions, structure data into clean tables, analyze topics, generate production code, or brainstorm ideas.
+            </p>
+
+            <!-- QUICK PROMPTS -->
+            <div class="quick-prompts-grid">
+              <button class="prompt-card" data-prompt="Explain SOLID software engineering principles with concise Python code examples and a summary comparison table.">
+                <div class="prompt-card-icon">🏗️</div>
+                <div class="prompt-card-body">
+                  <div class="prompt-card-title">Software Architecture</div>
+                  <div class="prompt-card-desc">Deep dive into design patterns with code examples</div>
+                </div>
+              </button>
+
+              <button class="prompt-card" data-prompt="Create a detailed comparison table analyzing the top databases (PostgreSQL, MongoDB, Redis, and ClickHouse) with latency, scalability, and best use cases.">
+                <div class="prompt-card-icon">📊</div>
+                <div class="prompt-card-body">
+                  <div class="prompt-card-title">Comparison Matrix</div>
+                  <div class="prompt-card-desc">Structured technical trade-off comparison table</div>
+                </div>
+              </button>
+
+              <button class="prompt-card" data-prompt="Brainstorm 5 high-impact product ideas combining AI workflows with modern web development, including monetization strategies.">
+                <div class="prompt-card-icon">💡</div>
+                <div class="prompt-card-body">
+                  <div class="prompt-card-title">Brainstorm Ideas</div>
+                  <div class="prompt-card-desc">Creative problem solving & innovation roadmap</div>
+                </div>
+              </button>
+
+              <button class="prompt-card" data-prompt="Draft a clear, high-impact executive summary and 90-day launch roadmap for a new software release.">
+                <div class="prompt-card-icon">📝</div>
+                <div class="prompt-card-body">
+                  <div class="prompt-card-title">Executive Brief & Plan</div>
+                  <div class="prompt-card-desc">Strategic milestones, OKRs, and executive brief</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- MESSAGES CONTAINER -->
+          <div class="messages-list" id="messagesList"></div>
+        </div>
+
+        <!-- COMPOSER AREA -->
+        <footer class="composer-container">
+          <div class="composer-wrapper">
+            <div class="composer-input-box">
+              <textarea
+                id="messageInput"
+                class="composer-textarea"
+                rows="1"
+                placeholder="Message NovaChat... (Shift + Enter for new line)"
+                aria-label="Message prompt"
+              ></textarea>
+              <div class="composer-actions">
+                <span class="char-counter" id="charCounter">0 / 4000</span>
+                <button id="sendBtn" class="btn-send" aria-label="Send message">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="composer-footer">
+              <span class="composer-hint">Press <strong>Enter ↵</strong> to send &bull; <strong>Shift + Enter</strong> for newline</span>
+              <span class="engine-hint" id="footerModelHint">Fast AI Inference</span>
+            </div>
+          </div>
+        </footer>
+      </main>
+    </div>
+
+    <!-- PROMPT LIBRARY MODAL -->
+    <div id="promptsModal" class="modal-backdrop">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <div class="modal-icon">⭐</div>
+            <div>
+              <h3 class="modal-title">Prompt Library</h3>
+              <p class="modal-subtitle">Curated high-performance prompts ready to use</p>
+            </div>
+          </div>
+          <button id="closePromptsBtn" class="modal-close-btn" aria-label="Close modal">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="prompt-tabs">
+            <button class="prompt-tab active" data-category="all">All Prompts</button>
+            <button class="prompt-tab" data-category="code">💻 Coding & Tech</button>
+            <button class="prompt-tab" data-category="writing">📝 Writing & Specs</button>
+            <button class="prompt-tab" data-category="strategy">🚀 Strategy & Plans</button>
+            <button class="prompt-tab" data-category="analysis">📊 Tables & Analysis</button>
+          </div>
+
+          <div class="prompt-grid-modal" id="modalPromptGrid">
+            <!-- Dynamically populated with rich prompts -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECENT HISTORY MODAL -->
+    <div id="historyModal" class="modal-backdrop">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <div class="modal-icon">🕒</div>
+            <div>
+              <h3 class="modal-title">Recent Conversations</h3>
+              <p class="modal-subtitle">Manage, switch, or review your past chat sessions</p>
+            </div>
+          </div>
+          <button id="closeHistoryBtn" class="modal-close-btn" aria-label="Close modal">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="history-list-modal" id="modalHistoryList">
+            <!-- Dynamically populated with chat history sessions -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

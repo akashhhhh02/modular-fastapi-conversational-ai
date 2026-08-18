@@ -1,0 +1,4 @@
+"""API version 1 endpoints and router."""
+from backend.app.api.v1.router import api_v1_router
+
+__all__ = ["api_v1_router"]

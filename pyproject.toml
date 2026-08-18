@@ -1,0 +1,29 @@
+[project]
+name = "intern-cei-cb"
+version = "1.0.0"
+description = "NovaChat AI — High-performance AI assistant built with FastAPI, Groq, and modern UI design"
+readme = "README.md"
+authors = [
+    { name = "Akash-2406", email = "akash.s.k246@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn>=0.30.6",
+    "python-dotenv>=1.0.1",
+    "groq>=0.11.0",
+    "httpx>=0.27.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+]
+
+[project.scripts]
+intern-cei-cb = "backend.run:start"
+
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13.0"]
+build-backend = "uv_build"
